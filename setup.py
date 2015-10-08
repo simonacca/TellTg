@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='Tell Telegram',
-    version='1.0.0',
+    version='1.0.1',
     url='https://github.com/simonacca/TellTelegram',
     author='Simone Accascina',
     author_email='simon@accascina.me',
