@@ -8,6 +8,13 @@ import argparse
 import requests
 import argparse
 
+# Sending
+def send_msg(conf, msg):
+    URL = 'https://api.telegram.org/{}/sendMessage'
+    for i in conf['ids']:
+        payload = {'chat_id': i, 'text': msg}
+        requests.post(URL.format(conf['key']), json=payload)
+
 HELP_TEXT = '''
 telltg "Hello world"
 longrunning_program && telltg -o "My batch job" "Done"
@@ -63,15 +70,14 @@ if args.id:
 # Message creation
 msg = 'Host: {}\n'.format(platform.node()) if args.hostname else ''
 msg += 'Object: {}\n'.format(args.object) if args.object else ''
-msg += args.message if args.message else ''
-msg += sys.stdin.read() if not sys.stdin.isatty() else ''
-
-if not msg:
-    parser.print_help()
-    sys.exit(1)
-
-# Sending
-URL = 'https://api.telegram.org/{}/sendMessage'
-for i in conf['ids']:
-    payload = {'chat_id': i, 'text': msg}
-    requests.post(URL.format(conf['key']), json=payload)
+if args.message:
+    msg += args.message if args.message else ''
+    send_msg(conf, msg)
+else:
+    if not sys.stdin.isatty():
+        while True:
+            line = sys.stdin.readline()
+            if not line:
+                break
+            else:
+                send_msg(conf, line)
