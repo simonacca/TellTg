@@ -48,7 +48,7 @@ First a bot and a chat_id are needed:
 
 ### Installation
 
-Run the following command: `pip install git+https://github.com/simonacca/TellTg/`
+Run the following command: `$ pip install telltg`
 
 ### Config file
 Write the config file with the syntax sppecified below in one of the following locations:

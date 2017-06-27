@@ -1,9 +1,9 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='Tell Telegram',
-    version='1.0.2',
-    url='https://github.com/simonacca/TellTelegram',
+    name='telltg',
+    version='1.1.2',
+    url='https://github.com/simonacca/TellTg',
     author='Simone Accascina',
     author_email='simon@accascina.me',
     description='A command line utility to send Telegram messages via a bot.',
