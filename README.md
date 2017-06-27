@@ -3,16 +3,38 @@ A simple command line utility to send messages via a telegram bot.
 
 ## Usage
 
-Telltg can be used with just one positional argument, the text:
-`telltg "hello world"`
+```
+$ telltg
+usage: 
+telltg "Hello world"
+longrunning_program && telltg -o "My batch job" "Done"
+echo "Hello world" | telltg
 
-It can be used with `stdin`. As an example:
-`cat MYFILE | telltg`
+Configuration. choose one of the following options:
+- Config file:
+    - create a telltg.conf.json file in
+        - ~/.telltg.conf.json
+        - /etc/telltg.conf.json
+    - copy and customize this config:
+        {"key":"bot123:abc","ids":["1234", "456"]}
+- ENVIRONMENTAL VARIABLE
+    - set the following environmental variables
+    - TELLTG_BOT_KEY
+    - TELLTG_CHAT_IDS (as comma separated values)
 
-An optional argument `-d` (domain) is used to specify the "source" of the message.
-This is useful to disambiguate which source/machine originated the message.
+A CLI Telegram message sender
 
-Optional `chat_id`(s) can be passed via the command line as well using the `-i flag`.
+positional arguments:
+  message               The message you want to send
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --object OBJECT, -o OBJECT
+                        Message object
+  --hostname, -n        Include hostname
+  --id [ID [ID ...]], -i [ID [ID ...]]
+                        Send to specific chat_id
+```
 
 ## Configuration
 
