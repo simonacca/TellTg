@@ -1,74 +1,77 @@
 #!/usr/bin/env python
 
-import urllib2, json, sys, os, fileinput
+import json
+import sys
+import os
+import platform
+import argparse
+import requests
 import argparse
 
-conf_msg = '''
-    Choose one of the following options for the configurations:
-    - JSON
-      - create a telltg.conf.json file in
-        - the same directory as the source code
+HELP_TEXT = '''
+telltg "Hello world"
+longrunning_program && telltg -o "My batch job" "Done"
+echo "Hello world" | telltg
+
+Configuration. choose one of the following options:
+- Config file:
+    - create a telltg.conf.json file in
         - ~/.telltg.conf.json
         - /etc/telltg.conf.json
-      - copy and customize this config:
-         {"key":"123abc","ids":["1234", "456"]}
-    - ENVIRONMENTAL VARIABLE
-      - set the following environmental variables
-        - TELLTG_BOT_KEY
-        - TELLTG_CHAT_IDS (as comma separated values)
-    \n\ntelltg can also be used to send messages passed via stdin, for example:
-    cat MYFILE.py | telltg
+    - copy and customize this config:
+        {"key":"bot123:abc","ids":["1234", "456"]}
+- ENVIRONMENTAL VARIABLE
+    - set the following environmental variables
+    - TELLTG_BOT_KEY
+    - TELLTG_CHAT_IDS (as comma separated values)
 '''
 
 # Argument parsing
-parser = argparse.ArgumentParser(description='A command line Telegram message sender',
-                                 usage = conf_msg)
+parser = argparse.ArgumentParser(
+    description='A CLI Telegram message sender', usage=HELP_TEXT)
 parser.add_argument('message',nargs='?', help='The message you want to send')
-parser.add_argument('-d', help='Message domain (much like an object field)')
-parser.add_argument('-i', nargs='*', help='Send to specific chat_id')
+parser.add_argument('--object', '-o', help='Message object')
+parser.add_argument('--hostname', '-n', action='store_true', help='Include hostname')
+parser.add_argument('--id', '-i', nargs='*', help='Send to specific chat_id')
 args = parser.parse_args()
 
 
-# Configuration fetch from files
 conf = {}
-conf_paths =[os.path.dirname(os.path.realpath(__file__)),
-             os.path.expanduser('~') + '.',
-             '/etc/']
+
+# Try to fech config from files
+conf_paths =[os.path.expanduser('~/.{}') , '/etc/{}']
 for path in conf_paths:
-    path = os.path.join(path, 'telltg.conf.json')
+    path = path.format('telltg.conf.json')
     if os.path.isfile(path):
         with open(path, 'r') as f:
-            conf = json.loads(f.read())
+            conf = json.load(f)
             break
 
-# Configuration fetch from environmental variables
+# Try to fetch config from environmental variables
 if not conf:
-    if not 'TELLTG_BOT_KEY' in os.environ:
-        print conf_msg
-        sys.exit()
-    else:
+    try:
         conf['key'] = os.environ['TELLTG_BOT_KEY']
         conf['ids'] = os.environ['TELLTG_CHAT_IDS'].split(',')
+    except KeyError:
+        parser.print_help()
+        sys.exit(1)
 
 # Configuration fetch from args
-if args.i:
-    conf['ids'] = args.i
+if args.id:
+    conf['ids'] = args.id
 
 # Message creation
-msg = ''
-if args.d:
-    msg += 'Domain:{}\n'.format(args.d)
+msg = 'Host: {}\n'.format(platform.node()) if args.hostname else ''
+msg += 'Object: {}\n'.format(args.object) if args.object else ''
+msg += args.message if args.message else ''
+msg += sys.stdin.read() if not sys.stdin.isatty() else ''
 
-if args.message:
-    msg += args.message
-else:
-    msg += sys.stdin.read()
-    if not msg:
-        sys.exit()
+if not msg:
+    parser.print_help()
+    sys.exit(1)
 
 # Sending
-url = 'https://api.telegram.org/bot{}/sendMessage'.format(conf['key'])
+URL = 'https://api.telegram.org/{}/sendMessage'
 for i in conf['ids']:
-    payload = json.dumps({'chat_id': i, 'text': msg})
-    req = urllib2.Request(url, payload, {'Content-Type': 'application/json'})
-    urllib2.urlopen(req)
+    payload = {'chat_id': i, 'text': msg}
+    requests.post(URL.format(conf['key']), json=payload)

@@ -11,6 +11,9 @@ setup(
     license='MIT',
     packages=find_packages(),
     scripts=['telltg/telltg'],
+    install_requires = [
+        'requests',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
