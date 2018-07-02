@@ -44,7 +44,7 @@ First a bot and a chat_id are needed:
 * take note of the bot's `token` provided by the botfather
 * add the bot to your contacts and sent it a message
 * Use the `getUpdates` API method to retrive your `chat_id`
-  * YOu can do that by point your browser at `https://api.telegram.org/bot{token}/getUpdates` and look for an `id` element inside a `chat` element
+  * To do that, navigate to `https://api.telegram.org/bot{token}/getUpdates` and look for an `id` element inside a `chat` element
 
 ### Installation
 
