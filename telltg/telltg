@@ -10,7 +10,7 @@ import argparse
 
 # Sending
 def send_msg(conf, msg):
-    URL = 'https://api.telegram.org/{}/sendMessage'
+    URL = 'https://api.telegram.org/bot{}/sendMessage'
     for i in conf['ids']:
         payload = {'chat_id': i, 'text': msg}
         requests.post(URL.format(conf['key']), json=payload)
