@@ -59,7 +59,7 @@ Write the config file with the syntax sppecified below in one of the following l
 
 ```
 {
-  "key":"mykey",
+  "key":"bot123:abc",
   "ids":[
     "myid1"
   ]
